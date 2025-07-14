@@ -1,11 +1,12 @@
-name: Sign Artifact with COSE
+name: Sign Artifact with COSE (Python)
 
 on:
   workflow_dispatch:
     inputs:
       file_to_sign:
-        description: 'Relative path to file to sign'
+        description: 'Relative path to the file to sign'
         required: true
+        type: string
 
 jobs:
   sign:
@@ -15,25 +16,23 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          dotnet-version: '8.0.x'
+          python-version: '3.11'
 
-      - name: Restore and build signer
-        run: |
-          dotnet build CoseSigner/CoseSigner.csproj --configuration Release
+      - name: Install dependencies
+        run: pip install cose cryptography
 
-      - name: Decode private key
+      - name: Write private key from secret
         run: |
           echo "${{ secrets.COSE_SIGN_KEY }}" | base64 -d > private_key.pk8
 
-      - name: Sign file with COSE
+      - name: Sign file using cose_signer.py
         run: |
-          FILE_TO_SIGN="${{ github.event.inputs.file_to_sign }}"
-          OUTPUT_FILE="${FILE_TO_SIGN}}.cose"
-          dotnet ./CoseSigner/bin/Release/net8.0/CoseSigner.dll "$FILE_TO_SIGN" "$OUTPUT_FILE" private_key.pk8
-          echo "Signed file created: $OUTPUT_FILE"
+          python cose_signer.py "${{ github.event.inputs.file_to_sign }}" \
+                 "${{ github.event.inputs.file_to_sign }}.cose" \
+                 private_key.pk8
 
       - name: Upload signed artifact
         uses: actions/upload-artifact@v4
