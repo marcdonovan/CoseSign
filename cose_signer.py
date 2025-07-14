@@ -22,10 +22,16 @@ def main():
         payload = f.read()
 
     private_key = load_private_key(private_key_file)
-    print(private_key)
-    print(private_key.private_numbers())
 
-    cose_key = EC2Key._from_cryptography_key(private_key)
+    # Manually construct EC2Key with required x, y, d values
+    numbers = private_key.private_numbers()
+    public_numbers = numbers.public_numbers
+
+    x = public_numbers.x.to_bytes(32, 'big')
+    y = public_numbers.y.to_bytes(32, 'big')
+    d = numbers.private_value.to_bytes(32, 'big')
+
+    cose_key = EC2Key(crv="P-256", x=x, y=y, d=d)
 
     msg = Sign1Message(phdr={KID: b"01"}, payload=payload, alg=Es256)
     msg.key = cose_key
