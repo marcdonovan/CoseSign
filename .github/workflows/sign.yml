@@ -23,8 +23,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pycose cryptography
           pip uninstall cose
+          pip uninstall cose
+          pip uninstall cose
+          pip install pycose cryptography
           pip show pycose
 
       - name: Write private key from secret
