@@ -21,13 +21,14 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Set up isolated Python environment
         run: |
-          pip uninstall cose
-          pip uninstall cose
-          pip uninstall cose
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
           pip install pycose cryptography
-          pip show pycose
+          pip list | grep -i cose || true
+          echo "from pycose.keys.ec2 import EC2Key" > sanity_check.py && python sanity_check.py
 
       - name: Write private key from secret
         run: |
@@ -35,6 +36,7 @@ jobs:
 
       - name: Sign file using cose_signer.py
         run: |
+          source .venv/bin/activate
           python cose_signer.py "${{ github.event.inputs.file_to_sign }}" \
                  "${{ github.event.inputs.file_to_sign }}.cose" \
                  private_key.pk8
