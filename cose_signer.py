@@ -1,10 +1,8 @@
 import sys
-from cose.messages import Sign1Message
-from cose.keys import EC2Key
-from cose.algorithms import Es256
-from cose.headers import KID
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.backends import default_backend
+from pycose.messages import Sign1Message
+from pycose.keys.ec2 import EC2Key
+from pycose.algorithms import Es256
+from pycose.headers import KID
 
 def load_private_key(pkcs8_path):
     with open(pkcs8_path, "rb") as f:
