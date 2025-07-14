@@ -22,6 +22,8 @@ def main():
         payload = f.read()
 
     private_key = load_private_key(private_key_file)
+    print(private_key)
+    print(private_key.private_numbers())
 
     cose_key = EC2Key._from_cryptography_key(private_key)
 
