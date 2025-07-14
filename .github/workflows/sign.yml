@@ -22,7 +22,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pycose cryptography
+        run: |
+          pip install pycose cryptography
+          pip uninstall cose
+          pip show pycose
 
       - name: Write private key from secret
         run: |
