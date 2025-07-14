@@ -1,8 +1,8 @@
 import sys
 from pycose.messages import Sign1Message
 from pycose.keys.ec2 import EC2Key
-from pycose.algorithms import Es256, CoseAlgorithm
 from pycose.headers import KID
+from pycose.algorithms import Es256, CoseAlgorithm
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
@@ -23,22 +23,25 @@ def main():
 
     private_key = load_private_key(private_key_file)
 
+    # Extract EC key parameters
     numbers = private_key.private_numbers()
     public_numbers = numbers.public_numbers
     x = public_numbers.x.to_bytes(32, 'big')
     y = public_numbers.y.to_bytes(32, 'big')
     d = numbers.private_value.to_bytes(32, 'big')
 
+    # Build COSE EC2Key
     cose_key = EC2Key(crv="P-256", x=x, y=y, d=d)
 
+    # Build the COSE Sign1 message
     msg = Sign1Message(phdr={KID: b"01"}, payload=payload)
     msg.key = cose_key
-    msg.alg = CoseAlgorithm.from_id(Es256)
+    msg.alg = CoseAlgorithm.from_id(Es256.identifier)  # ✅ FIXED HERE
 
     with open(output_file, "wb") as f:
         f.write(msg.encode())
 
-    print(f"Signed {input_file} → {output_file}")
+    print(f"✅ Signed {input_file} → {output_file}")
 
 if __name__ == "__main__":
     main()
