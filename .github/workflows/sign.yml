@@ -6,9 +6,6 @@ on:
       file_to_sign:
         description: 'Relative path to file to sign'
         required: true
-      private_key:
-        description: 'Base64-encoded private key (PKCS8 format)'
-        required: true
 
 jobs:
   sign:
@@ -29,7 +26,7 @@ jobs:
 
       - name: Decode private key
         run: |
-          echo "${{ github.event.inputs.private_key }}" | base64 -d > private_key.pk8
+          echo "${{ secrets.COSE_SIGN_KEY }}" | base64 -d > private_key.pk8
 
       - name: Sign file with COSE
         run: |
