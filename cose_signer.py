@@ -23,7 +23,7 @@ def main():
 
     private_key = load_private_key(private_key_file)
 
-    cose_key = EC2Key.from_cryptography_key(private_key, optional_params={KID: b"01"})
+    cose_key = EC2Key._from_cryptography_key(private_key, optional_params={KID: b"01"})
     msg = Sign1Message(phdr={KID: b"01"}, payload=payload, alg=Es256)
     msg.key = cose_key
 
