@@ -4,6 +4,9 @@ from pycose.keys.ec2 import EC2Key
 from pycose.algorithms import Es256
 from pycose.headers import KID
 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+
 def load_private_key(pkcs8_path):
     with open(pkcs8_path, "rb") as f:
         return serialization.load_der_private_key(f.read(), password=None, backend=default_backend())
